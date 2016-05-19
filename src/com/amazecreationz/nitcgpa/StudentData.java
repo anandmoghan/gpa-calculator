@@ -55,25 +55,25 @@ public class StudentData {
 		return this.failedCredits;
 	}
 	
-	public Float getSGPA(String semester) {
+	public float getSGPA(String semester) {
 		return sgpaMap.get(semester);
 	}
 	
-	public Integer getCredits(String semester) {
+	public int getCredits(String semester) {
 		return creditsMap.get(semester);
 	}
 	
-	public Integer getTotalCredits() {
-		Integer totalCredits = 0;
+	public int getTotalCredits() {
+		int totalCredits = 0;
 		for (Integer credits : creditsMap.values()) {
 		    totalCredits += credits;
 		}
 		return totalCredits;	
 	}
 	
-	public Float getCGPA() {
-		Integer credits = 0, totalCredits = 0;
-		Float sgpa = 0.0F, cgpa = 0.0F;
+	public float getCGPA() {
+		int credits = 0, totalCredits = 0;
+		float sgpa = 0.0F, cgpa = 0.0F;
 		for (String semester : sgpaMap.keySet()) {
 		    credits = creditsMap.get(semester);
 		    sgpa = sgpaMap.get(semester);
