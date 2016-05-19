@@ -1,5 +1,5 @@
 //$Id$
-package com.amazecreationz.nitcgpa;
+package com.amazecreationz.gpa;
 
 import java.util.HashMap;
 

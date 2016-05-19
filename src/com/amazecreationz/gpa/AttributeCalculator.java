@@ -1,5 +1,5 @@
 //$Id$
-package com.amazecreationz.nitcgpa;
+package com.amazecreationz.gpa;
 
 public class AttributeCalculator {
 	public static int getGradePoint(char grade){
