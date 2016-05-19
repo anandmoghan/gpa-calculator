@@ -30,6 +30,4 @@ public class AttributeCalculator {
 		}
         return branch;
     }
-	
-	
 }

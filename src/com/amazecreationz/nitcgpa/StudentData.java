@@ -1,13 +1,38 @@
 //$Id$
 package com.amazecreationz.nitcgpa;
 
+import java.util.HashMap;
+
 public class StudentData {
 	private String name, rollNo, branch;
+	private int passCredits, failedCredits;
+	private HashMap<String, Float> sgpaMap;
+	private HashMap<String, Integer> creditsMap;
 	
 	StudentData(String name, String rollNo, String branch){
 		this.name = name;
 		this.rollNo = rollNo;
 		this.branch = branch;
+		this.passCredits = 0;
+		this.failedCredits = 0;
+		this.sgpaMap = new HashMap<>();
+		this.creditsMap = new HashMap<>();
+	}
+	
+	public void setPassCredits(int passCredits) {
+		this.passCredits += passCredits;
+	}
+	
+	public void setFailedCredits(int failedCredits) {
+		this.failedCredits += failedCredits;
+	}
+	
+	public void setSGPA(String semester, Float sgpa) {
+		sgpaMap.put(semester, sgpa);
+	}
+	
+	public void setCredits(String semester, Integer credits) {
+		creditsMap.put(semester, credits);
 	}
 	
 	public String getName() {
@@ -20,5 +45,41 @@ public class StudentData {
 	
 	public String getBranch() {
 		return this.branch;
+	}
+	
+	public int getPassCredits() {
+		return this.passCredits;
+	}
+	
+	public int getFailedCredits() {
+		return this.failedCredits;
+	}
+	
+	public Float getSGPA(String semester) {
+		return sgpaMap.get(semester);
+	}
+	
+	public Integer getCredits(String semester) {
+		return creditsMap.get(semester);
+	}
+	
+	public Integer getTotalCredits() {
+		Integer totalCredits = 0;
+		for (Integer credits : creditsMap.values()) {
+		    totalCredits += credits;
+		}
+		return totalCredits;	
+	}
+	
+	public Float getCGPA() {
+		Integer credits = 0, totalCredits = 0;
+		Float sgpa = 0.0F, cgpa = 0.0F;
+		for (String semester : sgpaMap.keySet()) {
+		    credits = creditsMap.get(semester);
+		    sgpa = sgpaMap.get(semester);
+		    cgpa += sgpa*credits;
+		    totalCredits += credits;
+		}
+		return cgpa/totalCredits;
 	}
 }
