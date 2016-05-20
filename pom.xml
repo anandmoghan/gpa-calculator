@@ -3,10 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>website</groupId>
+    <groupId>com.amazecreationz</groupId>
     <artifactId>website</artifactId>
     <version>1.0</version>
-    <relativePath>../Website</relativePath>
+    <relativePath>../</relativePath>
   </parent>
   <artifactId>GPACalculator</artifactId>
   <name>GPACalculator</name>
