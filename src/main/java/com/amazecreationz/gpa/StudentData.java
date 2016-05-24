@@ -15,8 +15,8 @@ public class StudentData {
 		this.branch = branch;
 		this.passCredits = 0;
 		this.failedCredits = 0;
-		this.sgpaMap = new HashMap<>();
-		this.creditsMap = new HashMap<>();
+		this.sgpaMap = new HashMap<String, Float>();
+		this.creditsMap = new HashMap<String, Integer>();
 	}
 	
 	public void setPassCredits(int passCredits) {

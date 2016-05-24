@@ -1,5 +1,5 @@
 //$Id$
-package com.amazecreationz.nitcgpa;
+package com.amazecreationz.gpa.nitc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -33,7 +33,6 @@ public class NITCDataHandler {
                     copy=line;
                 }
             }
-        
             out.close();
             if(c==0){
                 System.out.println("Wrong Input File!");
@@ -80,6 +79,7 @@ public class NITCDataHandler {
     }
 	
 	public boolean dataProcessor(String inputFileName){
+		
 		if(cleanFile(inputFileName, "tmp//clean.txt") && alignData("tmp//clean.txt", "tmp//align.txt")){
 			return true;
 		}
