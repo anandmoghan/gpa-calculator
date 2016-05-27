@@ -9,15 +9,28 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
+import com.amazecreationz.gpa.common.AttributeCalculator;
 import com.amazecreationz.gpa.common.CommonService;
+import com.amazecreationz.gpa.common.StudentData;
 
 public class NITCDataHandler {
 	private String inputFileName;
 	private String reservedDirectory;
+	private StudentData student;
 	
 	public NITCDataHandler (String fileName) {
 		this.inputFileName = fileName;
 		this.reservedDirectory = "GPACalcData//"+ new Date().getTime();
+	}
+	
+	public boolean setStudentData(String studentDetails) {
+		int len = studentDetails.length();
+		String studentName = studentDetails.substring(0, len-11);
+		String rollNo = studentDetails.substring(len-9, len);
+		String branchCode = studentDetails.substring(len-2, len);
+		student = new StudentData(studentName, rollNo, AttributeCalculator.getBranch(branchCode));
+		System.out.println(student.getBranch());
+		return true;
 	}
 	
 	public boolean cleanFile(String inputFileName, String outputFileName)
@@ -49,6 +62,7 @@ public class NITCDataHandler {
                 System.out.println("Wrong Input File!");
                 return false;
             }
+            setStudentData(copy);
             return true;
         } catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -60,9 +74,11 @@ public class NITCDataHandler {
 	
 	public boolean alignData(String inputFileName, String outputFileName)
     { 
-        BufferedWriter out;
+		BufferedReader in;
+		BufferedWriter out;
         String details = "";
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFileName))) {
+        try {
+        	in = new BufferedReader(new FileReader(inputFileName));
         	out = new BufferedWriter(new FileWriter(outputFileName));
             String line;
             in.readLine();
@@ -79,6 +95,7 @@ public class NITCDataHandler {
                 else
                     out.write(line+" ");
             }
+            in.close();
             out.close();
             return true;
         } catch (FileNotFoundException e) {
@@ -88,6 +105,8 @@ public class NITCDataHandler {
 		}
         return false;
     }
+	
+	
 	
 	public boolean dataProcessor(){
 		System.out.println("NITC GradeCard");
