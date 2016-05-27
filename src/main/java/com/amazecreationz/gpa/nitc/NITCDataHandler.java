@@ -7,8 +7,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
+
+import com.amazecreationz.gpa.common.CommonService;
 
 public class NITCDataHandler {
+	private String inputFileName;
+	private String reservedDirectory;
+	
+	public NITCDataHandler (String fileName) {
+		this.inputFileName = fileName;
+		this.reservedDirectory = "GPACalcData//"+ new Date().getTime();
+	}
+	
 	public boolean cleanFile(String inputFileName, String outputFileName)
     {
         BufferedWriter out;
@@ -78,10 +89,17 @@ public class NITCDataHandler {
         return false;
     }
 	
-	public boolean dataProcessor(String inputFileName){
-		
-		if(cleanFile(inputFileName, "tmp//clean.txt") && alignData("tmp//clean.txt", "tmp//align.txt")){
-			return true;
+	public boolean dataProcessor(){
+		System.out.println("NITC GradeCard");
+		System.out.println("Working Directory: "+System.getProperty("user.dir"));
+		if(CommonService.createDirectory("GPACalcData")){
+			if(CommonService.createDirectory(reservedDirectory)){
+				if(CommonService.stripTextFromPDF(inputFileName, reservedDirectory+"//strippedtxt.txt")){
+					if(cleanFile(reservedDirectory+"//strippedtxt.txt", reservedDirectory+"//clean.txt") && alignData(reservedDirectory+"//clean.txt", reservedDirectory+"//align.txt")){
+						return true;
+					}
+				}
+			}
 		}
 		return false;
 	}

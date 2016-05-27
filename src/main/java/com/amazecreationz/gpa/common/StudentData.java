@@ -1,5 +1,5 @@
 //$Id$
-package com.amazecreationz.gpa;
+package com.amazecreationz.gpa.common;
 
 import java.util.HashMap;
 
@@ -9,7 +9,7 @@ public class StudentData {
 	private HashMap<String, Float> sgpaMap;
 	private HashMap<String, Integer> creditsMap;
 	
-	StudentData(String name, String rollNo, String branch){
+	public StudentData(String name, String rollNo, String branch){
 		this.name = name;
 		this.rollNo = rollNo;
 		this.branch = branch;
