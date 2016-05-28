@@ -35,8 +35,10 @@ public class NITCDataHandler implements AppConstants {
 	
 	public boolean cleanFile(String inputFileName, String outputFileName)
     {
-        BufferedWriter out;
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFileName))) {
+		BufferedReader in;
+		BufferedWriter out;
+        try {
+        	in = new BufferedReader(new FileReader(inputFileName));
             out = new BufferedWriter(new FileWriter(outputFileName));
             /*Unwanted Strings to be removed Start*/
             String s1 = "National Institute of Technology, Calicut";
@@ -57,6 +59,7 @@ public class NITCDataHandler implements AppConstants {
                     copy=line;
                 }
             }
+            in.close();
             out.close();
             if(c == 0){
                 System.out.println("Wrong Input File!");
