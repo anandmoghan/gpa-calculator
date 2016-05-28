@@ -9,11 +9,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
 
+import com.amazecreationz.gpa.common.AppConstants;
 import com.amazecreationz.gpa.common.AttributeCalculator;
 import com.amazecreationz.gpa.common.CommonService;
 import com.amazecreationz.gpa.common.StudentData;
 
-public class NITCDataHandler {
+public class NITCDataHandler implements AppConstants {
 	private String inputFileName;
 	private String reservedDirectory;
 	private StudentData student;
@@ -29,36 +30,35 @@ public class NITCDataHandler {
 		String rollNo = studentDetails.substring(len-9, len);
 		String branchCode = studentDetails.substring(len-2, len);
 		student = new StudentData(studentName, rollNo, AttributeCalculator.getBranch(branchCode));
-		System.out.println(student.getBranch());
 		return true;
 	}
 	
 	public boolean cleanFile(String inputFileName, String outputFileName)
     {
         BufferedWriter out;
-        String copy = null;
         try (BufferedReader in = new BufferedReader(new FileReader(inputFileName))) {
             out = new BufferedWriter(new FileWriter(outputFileName));
             /*Unwanted Strings to be removed Start*/
-            String s1 = "Sl No. Code Course Title Credits Grade Result";
-            String s2 = "National Institute of Technology, Calicut";
+            String s1 = "National Institute of Technology, Calicut";
+            String s2 = "Sl No. Code Course Title Credits Grade Result";
             String s3 = "Page";
-            String s4 = "ActiveReports Evaluation. Copyright 2002-2005 (c) Data Dynamics, Ltd. All Rights Reserved.";
+            String s4 = "ActiveReports Evaluation.";
             /*Unwanted Strings to be removed End*/
-            String line;
+            String line, copy = null;
             int c = 0;
-            while((line=in.readLine())!=null && line.length()!=0){
-                if((line.compareTo(s2)==0)){
+            while((line = in.readLine()) != null && line.length() != 0){
+                if(line.startsWith(s1)){
                     c++;
                 }
-                if((line.compareTo(s1)!=0)&&(line.compareTo(s2)!=0)&&(line.substring(0,4).compareTo(s3)!=0)&&(line.compareTo(s4)!=0)){
-                    if(line.substring(0,3).compareTo("Sem")!=0)
-                        out.write(copy+String.format("%n"));
+                if(!line.startsWith(s1) && !line.startsWith(s2) && !line.startsWith(s3) && !line.startsWith(s4)){
+                    if(!line.startsWith("Semester")){
+                        out.write(copy + String.format("%n"));
+                    }
                     copy=line;
                 }
             }
             out.close();
-            if(c==0){
+            if(c == 0){
                 System.out.println("Wrong Input File!");
                 return false;
             }
@@ -76,24 +76,20 @@ public class NITCDataHandler {
     { 
 		BufferedReader in;
 		BufferedWriter out;
-        String details = "";
         try {
         	in = new BufferedReader(new FileReader(inputFileName));
         	out = new BufferedWriter(new FileWriter(outputFileName));
             String line;
             in.readLine();
-            while((line=in.readLine())!=null && line.length()!=0){
-                if(line.compareTo(details)==0){
-                    continue;
+            while((line = in.readLine()) !=null && line.length() != 0){
+                if(line.startsWith(student.getName())){
                 }
-                if((line.substring(0,3).compareTo("Sem")==0)){
-                    out.write(line+String.format("%n"));
-                    continue;
+                else if(line.startsWith("Semester") || line.lastIndexOf("PASS") > 0 || line.lastIndexOf("FAIL") > 0){
+                    out.write(line + String.format("%n"));
                 }
-                if((line.lastIndexOf("PASS"))>0||(line.lastIndexOf("FAIL"))>0)
-                    out.write(line+String.format("%n"));
-                else
-                    out.write(line+" ");
+                else{
+                    out.write(line + " ");
+                }
             }
             in.close();
             out.close();
@@ -106,7 +102,59 @@ public class NITCDataHandler {
         return false;
     }
 	
-	
+	public boolean calculateGPA(String inputFileName){
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new FileReader(inputFileName));
+			String line;
+			Semester semester = Semester.S1;
+			float sgpa = 0.0F;
+			int passCredits = 0, failedCredits = 0, semesterIndex = 0;
+			while((line = in.readLine()) != null && line.length() != 0){
+				if(line.startsWith("Semester")){
+					if(sgpa > 0){
+						student.setSGPA(semester, sgpa/passCredits);
+						student.setCredits(semester, passCredits);
+						student.setPassCredits(passCredits);
+						student.setFailedCredits(failedCredits);						
+					}
+					semester = Semester.values()[semesterIndex];
+					sgpa = 0.0F;
+					passCredits = 0;
+					failedCredits = 0;
+					semesterIndex++;
+				}
+				else {
+					String args [] = line.split(" ");
+					int argsLen = args.length;
+					int credits = Integer.parseInt(args[argsLen-3]);
+					if(args[argsLen-1].startsWith("PASS")){
+						if(args[argsLen-2].startsWith("P")){
+							student.setPassCredits(credits);
+						}
+						else{
+							sgpa += (float) credits * AttributeCalculator.getGradePoint(args[argsLen-2]);
+							passCredits += credits;	
+						}			
+					}
+					else {
+						failedCredits += credits;
+					}
+				}
+			}
+			student.setSGPA(semester, sgpa/passCredits);
+			student.setCredits(semester, passCredits);
+			student.setPassCredits(passCredits);
+			student.setFailedCredits(failedCredits);
+			in.close();
+			return true;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 	
 	public boolean dataProcessor(){
 		System.out.println("NITC GradeCard");
@@ -114,7 +162,8 @@ public class NITCDataHandler {
 		if(CommonService.createDirectory("GPACalcData")){
 			if(CommonService.createDirectory(reservedDirectory)){
 				if(CommonService.stripTextFromPDF(inputFileName, reservedDirectory+"//strippedtxt.txt")){
-					if(cleanFile(reservedDirectory+"//strippedtxt.txt", reservedDirectory+"//clean.txt") && alignData(reservedDirectory+"//clean.txt", reservedDirectory+"//align.txt")){
+					if(cleanFile(reservedDirectory+"//strippedtxt.txt", reservedDirectory+"//clean.txt") && alignData(reservedDirectory+"//clean.txt", reservedDirectory+"//align.txt") && calculateGPA(reservedDirectory+"//align.txt")){
+						System.out.println("CGPA: "+ student.getCGPA());
 						return true;
 					}
 				}
