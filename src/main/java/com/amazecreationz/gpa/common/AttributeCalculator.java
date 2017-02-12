@@ -27,6 +27,23 @@ public class AttributeCalculator {
 			case "PE": return "Production Engineering";
 			case "EP": return "Engineering Physics";
 			case "BT": return "Biotechnology";
+			case "AR": return "Architecture";
+		}
+        return branch;
+    }
+	
+	public static String getBranchCode(String branch){
+		switch(branch){
+			case "Electronics and Communication Engineering": return "EC";
+			case "Electrical and Electronics Engineering": return "EE";
+			case "Computer Science Engineering": return "CS";
+			case "Mechanical Engineering": return "ME";
+			case "Civil Engineering": return "CE";
+			case "Chemical Engineering": return "CH";
+			case "Production Engineering": return "PE";
+			case "Engineering Physics": return "EP";
+			case "Biotechnology": return "BT";
+			case "Architecture": return "AR";
 		}
         return branch;
     }

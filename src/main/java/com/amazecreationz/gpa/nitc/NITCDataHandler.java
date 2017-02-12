@@ -16,12 +16,23 @@ import com.amazecreationz.gpa.common.StudentData;
 
 public class NITCDataHandler implements AppConstants {
 	private String inputFileName;
+	private String rootLocation;
+	private String baseDirectory;
 	private String reservedDirectory;
 	private StudentData student;
 	
 	public NITCDataHandler (String fileName) {
 		this.inputFileName = fileName;
-		this.reservedDirectory = "GPACalcData//"+ new Date().getTime();
+		this.rootLocation = System.getProperty("user.dir");
+		this.baseDirectory = this.rootLocation +"/GPACalcData/";
+		this.reservedDirectory = this.baseDirectory +new Date().getTime();
+	}
+	
+	public NITCDataHandler (String fileName, String rootLoc) {
+		this.inputFileName = fileName;
+		this.rootLocation = rootLoc;
+		this.baseDirectory = this.rootLocation +"/GPACalcData/";
+		this.reservedDirectory = this.baseDirectory +new Date().getTime();
 	}
 	
 	public boolean setStudentData(String studentDetails) {
@@ -31,6 +42,10 @@ public class NITCDataHandler implements AppConstants {
 		String branchCode = studentDetails.substring(len-2, len);
 		student = new StudentData(studentName, rollNo, AttributeCalculator.getBranch(branchCode));
 		return true;
+	}
+	
+	public StudentData getStudentData() {
+		return student;
 	}
 	
 	public boolean cleanFile(String inputFileName, String outputFileName)
@@ -161,11 +176,11 @@ public class NITCDataHandler implements AppConstants {
 	
 	public boolean dataProcessor(){
 		System.out.println("NITC GradeCard");
-		System.out.println("Working Directory: "+System.getProperty("user.dir"));
-		if(CommonService.createDirectory("GPACalcData")){
+		System.out.println("Working Directory: " +this.rootLocation);
+		if(CommonService.createDirectory(this.baseDirectory)){
 			if(CommonService.createDirectory(reservedDirectory)){
-				if(CommonService.stripTextFromPDF(inputFileName, reservedDirectory+"//strippedtxt.txt")){
-					if(cleanFile(reservedDirectory+"//strippedtxt.txt", reservedDirectory+"//clean.txt") && alignData(reservedDirectory+"//clean.txt", reservedDirectory+"//align.txt") && calculateGPA(reservedDirectory+"//align.txt")){
+				if(CommonService.stripTextFromPDF(inputFileName, reservedDirectory+"/strippedtxt.txt")){
+					if(cleanFile(reservedDirectory+"/strippedtxt.txt", reservedDirectory+"/clean.txt") && alignData(reservedDirectory+"//clean.txt", reservedDirectory+"//align.txt") && calculateGPA(reservedDirectory+"//align.txt")){
 						System.out.println("CGPA: "+ student.getCGPA());
 						return true;
 					}

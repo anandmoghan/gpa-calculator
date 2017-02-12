@@ -3,6 +3,8 @@ package com.amazecreationz.gpa.common;
 
 import java.util.HashMap;
 
+import org.json.simple.JSONObject;
+
 public class StudentData implements AppConstants {
 	private String name, rollNo, branch;
 	private int passCredits, failedCredits;
@@ -81,5 +83,19 @@ public class StudentData implements AppConstants {
 		    totalCredits += credits;
 		}
 		return cgpa/totalCredits;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject getStudentJSON() {
+		JSONObject student = new JSONObject();
+		student.put("name", name);
+		student.put("roll_no", rollNo);
+		student.put("branch", branch);
+		student.put("pass_credits", passCredits);
+		student.put("failed_credits", failedCredits);
+		student.put("sgpa", sgpaMap);
+		student.put("credits", creditsMap);
+		student.put("cgpa", getCGPA());
+		return student;
 	}
 }
